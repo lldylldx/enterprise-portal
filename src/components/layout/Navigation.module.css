@@ -1,0 +1,151 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--space-lg) 0;
+  transition: all var(--transition-base);
+}
+
+.header.scrolled {
+  background: rgba(250, 250, 249, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--border);
+  padding: var(--space-md) 0;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  z-index: 10;
+}
+
+.logoText {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text-primary);
+}
+
+.desktopNav {
+  display: flex;
+  gap: var(--space-2xl);
+}
+
+.navLink {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width var(--transition-base);
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.loginButton {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.loginButton:hover {
+  color: var(--accent);
+}
+
+.desktopCta {
+  display: block;
+}
+
+.menuButton {
+  display: none;
+  padding: var(--space-sm);
+  color: var(--text-primary);
+}
+
+/* Mobile Menu */
+.mobileMenu {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+}
+
+.mobileMenuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4xl);
+}
+
+.closeButton {
+  padding: var(--space-sm);
+  color: var(--text-primary);
+}
+
+.mobileNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.mobileNavLink {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobileCta {
+  padding-top: var(--space-2xl);
+}
+
+@media (max-width: 768px) {
+  .desktopNav,
+  .desktopCta,
+  .loginButton {
+    display: none;
+  }
+
+  .menuButton {
+    display: block;
+  }
+}

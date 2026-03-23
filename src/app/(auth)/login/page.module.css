@@ -1,0 +1,29 @@
+.container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.loginCard {
+  background: var(--white);
+  border-radius: 12px;
+  padding: var(--space-2xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}

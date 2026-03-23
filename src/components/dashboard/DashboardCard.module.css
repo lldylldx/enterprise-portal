@@ -1,0 +1,65 @@
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.content {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Action Card */
+.actionCard {
+  background: var(--white);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.actionCard:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(201, 169, 110, 0.15);
+}
+
+.actionTitle {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* List Card */
+.listCard {
+  background: var(--white);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.listTitle {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.listContent {
+  font-size: 0.875rem;
+}
