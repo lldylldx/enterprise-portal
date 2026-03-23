@@ -1,22 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import { Loader2 } from 'lucide-react';
 import styles from './AuthForm.module.css';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export default function AuthForm() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,16 +29,15 @@ export default function AuthForm() {
 
       if (authError) {
         setError(authError.message);
+        setIsLoading(false);
         return;
       }
 
-      if (data.user) {
-        router.push('/dashboard');
-        router.refresh();
+      if (data?.user) {
+        window.location.href = '/dashboard';
       }
-    } catch {
-      setError('登录过程中发生错误，请重试');
-    } finally {
+    } catch (err: any) {
+      setError(err.message || '登录过程中发生错误，请重试');
       setIsLoading(false);
     }
   };
