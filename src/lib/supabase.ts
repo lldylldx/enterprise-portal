@@ -71,3 +71,63 @@ export type Employee = {
   avatar_url: string | null;
   created_at: string;
 };
+
+export type Attendance = {
+  id: string;
+  employee_id: string;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  check_in_location: { latitude: number; longitude: number } | null;
+  check_out_location: { latitude: number; longitude: number } | null;
+  status: string;
+  date: string;
+  created_at: string;
+};
+
+export type EmployeeManager = {
+  id: string;
+  employee_id: string;
+  manager_id: string;
+  created_at: string;
+};
+
+export type OvertimeRequest = {
+  id: string;
+  employee_id: string;
+  manager_id: string;
+  date: string;
+  hours: number;
+  reason: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  manager_comment: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LeaveRequest = {
+  id: string;
+  employee_id: string;
+  manager_id: string;
+  leave_type: 'annual' | 'sick' | 'personal' | 'marriage' | 'maternity' | 'paternity' | 'bereavement' | 'other';
+  start_date: string;
+  end_date: string;
+  total_days: number;
+  reason: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  manager_comment: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Message = {
+  id: string;
+  recipient_id: string;
+  sender_id: string | null;
+  type: 'overtime_submitted' | 'leave_submitted' | 'overtime_approved' | 'overtime_rejected' | 'leave_approved' | 'leave_rejected' | 'overtime_cancelled' | 'leave_cancelled';
+  title: string;
+  content: string;
+  reference_id: string | null;
+  reference_type: 'overtime' | 'leave' | null;
+  is_read: boolean;
+  created_at: string;
+};

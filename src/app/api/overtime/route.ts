@@ -1,0 +1,102 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+
+export async function GET() {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
+
+    const { data, error } = await supabase
+      .from('overtime_requests')
+      .select('*')
+      .eq('employee_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return NextResponse.json(data || []);
+  } catch (error) {
+    console.error('Error fetching overtime requests:', error);
+    return NextResponse.json({ error: '获取加班申请失败' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { date, hours, reason } = body;
+
+    if (!date || !hours) {
+      return NextResponse.json({ error: '日期和加班小时数不能为空' }, { status: 400 });
+    }
+
+    if (hours <= 0 || hours > 24) {
+      return NextResponse.json({ error: '加班小时数必须在1-24之间' }, { status: 400 });
+    }
+
+    // Get employee's manager
+    const { data: managerRelation, error: managerError } = await supabase
+      .from('employee_managers')
+      .select('manager_id')
+      .eq('employee_id', user.id)
+      .single();
+
+    if (managerError || !managerRelation) {
+      return NextResponse.json({ error: '未找到员工的直接主管' }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from('overtime_requests')
+      .insert([
+        {
+          employee_id: user.id,
+          manager_id: managerRelation.manager_id,
+          date,
+          hours,
+          reason: reason || null,
+          status: 'pending',
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Create notification message for manager
+    const { data: employee } = await supabase
+      .from('employees')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    await supabase.from('messages').insert([
+      {
+        recipient_id: managerRelation.manager_id,
+        sender_id: user.id,
+        type: 'overtime_submitted',
+        title: '新的加班申请',
+        content: `员工 ${employee?.full_name || '未知'} 提交了加班申请，申请日期：${date}，时长：${hours}小时`,
+        reference_id: data.id,
+        reference_type: 'overtime',
+      },
+    ]);
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    console.error('Error creating overtime request:', error);
+    return NextResponse.json({ error: '创建加班申请失败' }, { status: 500 });
+  }
+}

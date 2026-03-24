@@ -1,0 +1,220 @@
+.approvals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.headerSection {
+  background: var(--bg-dark);
+  margin: calc(var(--space-xl) * -1);
+  padding: var(--space-2xl) var(--space-xl);
+}
+
+.headerContent {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.message {
+  padding: var(--space-md);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.messageSuccess {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.messageError {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border-radius: 50%;
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+}
+
+.requestList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.requestCard {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  border: 1px solid var(--border);
+}
+
+.requestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.requestEmployee {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.employeeName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.requestType {
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: rgba(201, 169, 110, 0.1);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.requestTime {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.requestBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.requestRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.requestLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.requestValue {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.requestValueHighlight {
+  font-size: 0.875rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.requestActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.commentInput {
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--white);
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+}
+
+.approveButton,
+.rejectButton {
+  padding: var(--space-sm) var(--space-xl);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.approveButton {
+  background: #16a34a;
+  color: var(--white);
+}
+
+.approveButton:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.rejectButton {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.approveButton:disabled,
+.rejectButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

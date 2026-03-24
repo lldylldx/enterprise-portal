@@ -2,12 +2,56 @@ import { createClient } from '@/lib/supabase/server';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import styles from './page.module.css';
 
+async function getWeather() {
+  try {
+    // wttr.in auto-detects location based on request IP
+    const res = await fetch('https://wttr.in/?format=j1', {
+      next: { revalidate: 1800 },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const current = data.current_condition?.[0];
+    const nearestArea = data.nearest_area?.[0];
+
+    // Get city name from nearest area
+    const city =
+      nearestArea?.region?.[0]?.value ||
+      nearestArea?.areaName?.[0]?.value ||
+      nearestArea?.country?.[0]?.value ||
+      '未知';
+
+    return {
+      city,
+      temperature: current?.temp_C + '°C',
+      humidity: current?.humidity + '%',
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  let employeeName = user?.email?.split('@')[0] || '员工';
+
+  if (user) {
+    const { data: employee } = await supabase
+      .from('employees')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    if (employee?.full_name) {
+      employeeName = employee.full_name;
+    }
+  }
+
+  const weather = await getWeather();
 
   const today = new Date();
   const dateString = today.toLocaleDateString('zh-CN', {
@@ -18,9 +62,10 @@ export default async function DashboardPage() {
   });
 
   const quickActions = [
-    { id: 'attendance', label: '考勤打卡', icon: 'clock' },
-    { id: 'leave', label: '请假申请', icon: 'calendar' },
-    { id: 'salary', label: '查看工资', icon: 'wallet' },
+    { id: 'attendance', label: '考勤打卡', icon: 'clock', href: '/dashboard/attendance' },
+    { id: 'overtime', label: '加班申请', icon: 'clock', href: '/dashboard/overtime' },
+    { id: 'leave', label: '请假申请', icon: 'calendar', href: '/dashboard/leave' },
+    { id: 'salary', label: '查看工资', icon: 'wallet', href: '/dashboard/salary' },
   ];
 
   const announcements = [
@@ -40,9 +85,16 @@ export default async function DashboardPage() {
       <section className={styles.welcomeSection}>
         <div className={styles.welcomeContent}>
           <h1 className={styles.welcomeTitle}>
-            欢迎回来，{user?.email?.split('@')[0] || '员工'}
+            欢迎回来，{employeeName}
           </h1>
-          <p className={styles.date}>{dateString}</p>
+          <div className={styles.welcomeInfo}>
+            <p className={styles.date}>{dateString}</p>
+            {weather && (
+              <p className={styles.weather}>
+                {weather.city} | {weather.temperature} | 湿度 {weather.humidity}
+              </p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -50,7 +102,7 @@ export default async function DashboardPage() {
         <h2 className={styles.sectionTitle}>快捷操作</h2>
         <div className={styles.quickActions}>
           {quickActions.map((action) => (
-            <DashboardCard key={action.id} variant="action" title={action.label} />
+            <DashboardCard key={action.id} variant="action" title={action.label} href={action.href} />
           ))}
         </div>
       </section>

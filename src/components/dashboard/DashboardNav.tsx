@@ -4,12 +4,15 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 import { Menu, X, LogOut, Clock } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import styles from './DashboardNav.module.css';
 
 const navLinks = [
   { href: '/dashboard', label: '首页' },
   { href: '/dashboard/attendance', label: '考勤' },
+  { href: '/dashboard/overtime', label: '加班' },
   { href: '/dashboard/leave', label: '请假' },
+  { href: '/dashboard/approvals', label: '审批' },
   { href: '/dashboard/salary', label: '工资' },
 ];
 
@@ -121,6 +124,7 @@ export default function DashboardNav() {
           </nav>
 
           <div className={styles.actions}>
+            <NotificationBell />
             <button
               onClick={handleLogout}
               className={styles.logoutButton}
