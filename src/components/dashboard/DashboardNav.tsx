@@ -2,15 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import { Menu, X, LogOut } from 'lucide-react';
 import styles from './DashboardNav.module.css';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const navLinks = [
   { href: '/dashboard', label: '首页' },
@@ -23,7 +17,11 @@ export default function DashboardNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const router = useRouter();
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,8 +35,7 @@ export default function DashboardNav() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/';
   };
 
   return (
