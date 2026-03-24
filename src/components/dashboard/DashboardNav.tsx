@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Clock } from 'lucide-react';
 import styles from './DashboardNav.module.css';
 
 const navLinks = [
@@ -13,33 +13,98 @@ const navLinks = [
   { href: '/dashboard/salary', label: '工资' },
 ];
 
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+const WARNING_TIME = 5 * 60 * 1000; // Show warning 5 minutes before timeout
+
 export default function DashboardNav() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     setIsLoggingOut(true);
     await supabase.auth.signOut();
     window.location.href = '/';
+  }, [supabase]);
+
+  const resetTimer = useCallback(() => {
+    setShowTimeoutWarning(false);
+    setRemainingTime(0);
+    localStorage.setItem('lastActivity', Date.now().toString());
+  }, []);
+
+  const checkTimeout = useCallback(() => {
+    const lastActivity = localStorage.getItem('lastActivity');
+    if (!lastActivity) return;
+
+    const elapsed = Date.now() - parseInt(lastActivity, 10);
+    const remaining = SESSION_TIMEOUT - elapsed;
+
+    if (elapsed >= SESSION_TIMEOUT) {
+      handleLogout();
+    } else if (remaining <= WARNING_TIME && remaining > 0) {
+      setShowTimeoutWarning(true);
+      setRemainingTime(Math.ceil(remaining / 1000));
+    } else {
+      setShowTimeoutWarning(false);
+    }
+  }, [handleLogout]);
+
+  useEffect(() => {
+    resetTimer();
+
+    const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+    const handleActivity = () => resetTimer();
+
+    events.forEach(event => {
+      window.addEventListener(event, handleActivity, { passive: true });
+    });
+
+    const scrollHandler = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+
+    const interval = setInterval(checkTimeout, 1000);
+
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, handleActivity);
+      });
+      window.removeEventListener('scroll', scrollHandler);
+      clearInterval(interval);
+    };
+  }, [resetTimer, checkTimeout]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleStayLoggedIn = () => {
+    resetTimer();
   };
 
   return (
     <>
+      {showTimeoutWarning && (
+        <div className={styles.timeoutWarning}>
+          <div className={styles.timeoutContent}>
+            <Clock size={20} />
+            <span>由于您长时间未操作，将在 {formatTime(remainingTime)} 后自动退出登录</span>
+            <button onClick={handleStayLoggedIn} className={styles.stayLoggedIn}>
+              继续操作
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className={`${styles.header} ${isScrolled ? styles.scrolled : ''}`}>
         <div className={styles.container}>
           <Link href="/dashboard" className={styles.logo}>
